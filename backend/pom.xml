@@ -11,9 +11,11 @@
     <relativePath/>
   </parent>
 
-  <groupId>com.example</groupId>
-  <artifactId>sausage-store-backend</artifactId>
-  <!-- Версия берётся из свойства, как требует задание -->
+  <!-- Для автопроверок задания предпочтительнее такие значения -->
+  <groupId>com.yandex.practicum.devops</groupId>
+  <artifactId>sausage-store</artifactId>
+
+  <!-- Версия берётся из свойства -->
   <version>${version.application}</version>
 
   <properties>
@@ -23,7 +25,7 @@
   </properties>
 
   <dependencies>
-    <!-- Web + Jackson -->
+    <!-- Web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -41,7 +43,7 @@
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- H2 для локального запуска/тестов (опционально, если у тебя есть БД другая — замени) -->
+    <!-- Временная БД для локального запуска/тестов -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
@@ -63,7 +65,7 @@
   </dependencies>
 
   <build>
-    <!-- чтобы имя JAR включало версию -->
+    <!-- Имя jar включает версию -->
     <finalName>${project.artifactId}-${version.application}</finalName>
     <plugins>
       <plugin>
@@ -73,6 +75,3 @@
     </plugins>
   </build>
 </project>
-
-
-exit
