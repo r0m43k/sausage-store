@@ -24,10 +24,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      # Сборка с подстановкой версии 1.0.<SHA7> и без запуска тестов
       - name: Build with Maven (skip tests)
         working-directory: backend
-        run: mvn -B clean package -DskipTests=true -Dversion.application=${APP_VERSION}.${GITHUB_SHA:0:7}
+        run: mvn -B package -DskipTests=true -Dversion.application=${APP_VERSION}.${GITHUB_SHA:0:7}
 
+      # Интеграционные/юнит тесты (если нужны отдельно от сборки)
       - name: Run Integration Tests
         working-directory: backend
         run: mvn -B test
@@ -41,13 +43,9 @@ jobs:
         run: mvn -B spotbugs:check
         continue-on-error: true
 
-      - name: Create Archive
-        run: |
-          mkdir -p backend/artifacts
-          tar -czvf backend/artifacts/sausage-store-${APP_VERSION}.${GITHUB_SHA:0:7}.tar.gz -C backend/target *.jar
-
+      # Загружаем собранный jar (имя уже включает версию из pom.xml)
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: backend-archive
-          path: backend/artifacts/sausage-store-*.tar.gz
+          name: backend-jar
+          path: backend/target/*.jar
