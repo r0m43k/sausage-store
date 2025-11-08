@@ -23,6 +23,17 @@ jobs:
           java-version: '17'
           cache: maven
 
+      # Явно убеждаемся, что PATH/JAVA_HOME указывают на 17
+      - name: Verify Java toolchain on runner
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          which java || true
+          which javac || true
+          java -version
+          javac -version
+          mvn -v
+
+      # Принудительно говорим Maven'у использовать JDK из $JAVA_HOME
       - name: Configure Maven toolchains for JDK 17
         run: |
           mkdir -p ~/.m2
@@ -34,7 +45,6 @@ jobs:
               <type>jdk</type>
               <provides>
                 <version>17</version>
-                <vendor>temurin</vendor>
               </provides>
               <configuration>
                 <jdkHome>${env.JAVA_HOME}</jdkHome>
@@ -43,19 +53,16 @@ jobs:
           </toolchains>
           XML
 
+      # Показываем, что Maven действительно увидел JDK 17 через toolchains
       - name: Show effective Java for Maven
         run: mvn -B -q -Dorg.slf4j.simpleLogger.log.org.apache.maven.plugins.toolchain.DefaultToolchainManager=debug validate
 
-      - name: Verify Java & Maven
-        run: |
-          java -version
-          mvn -v
-
+      # Сборка с версией 1.0.<SHA7> без запуска тестов (быстрее, и артефакт уже будет)
       - name: Build with Maven (skip tests)
         working-directory: backend
         run: mvn -B package -DskipTests=true -Dversion.application=${APP_VERSION}.${GITHUB_SHA:0:7}
 
-      - name: Run Integration Tests
+      - name: Run Tests
         working-directory: backend
         run: mvn -B test
 
