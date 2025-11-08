@@ -2,11 +2,9 @@ name: Backend Build and Test
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
@@ -21,15 +19,20 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
+          cache: maven
 
-      # Сборка с подстановкой версии 1.0.<SHA7> и без запуска тестов
+      - name: Verify Java & Maven
+        run: |
+          java -version
+          mvn -v
+
+      # Сборка с версией 1.0.<SHA7> без запуска тестов
       - name: Build with Maven (skip tests)
         working-directory: backend
         run: mvn -B package -DskipTests=true -Dversion.application=${APP_VERSION}.${GITHUB_SHA:0:7}
 
-      # Интеграционные/юнит тесты (если нужны отдельно от сборки)
       - name: Run Integration Tests
         working-directory: backend
         run: mvn -B test
@@ -43,7 +46,7 @@ jobs:
         run: mvn -B spotbugs:check
         continue-on-error: true
 
-      # Загружаем собранный jar (имя уже включает версию из pom.xml)
+      # Загружаем собранный JAR как артефакт
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
         with:
