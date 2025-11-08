@@ -7,22 +7,60 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.5</version>
+    <version>2.7.18</version>
     <relativePath/>
   </parent>
 
   <groupId>com.example</groupId>
   <artifactId>sausage-store-backend</artifactId>
-
-  <!-- Требование задания: версия приходит как свойство -->
+  <!-- Версия берётся из свойства, как требует задание -->
   <version>${version.application}</version>
 
   <properties>
-    <!-- дефолт для локала, в CI переопределяется -Dversion.application=1.0.${SHA7} -->
     <version.application>1.0.0-local</version.application>
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+  <dependencies>
+    <!-- Web + Jackson -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- JPA (javax.persistence) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <!-- Bean Validation (javax.validation.*) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- H2 для локального запуска/тестов (опционально, если у тебя есть БД другая — замени) -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Тесты -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.junit.vintage</groupId>
+          <artifactId>junit-vintage-engine</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
 
   <build>
     <!-- чтобы имя JAR включало версию -->
@@ -34,6 +72,7 @@
       </plugin>
     </plugins>
   </build>
-
-  <!-- оставь свои dependencies/plugins ниже (если были), я добавил только безопасный минимум -->
 </project>
+
+
+exit
