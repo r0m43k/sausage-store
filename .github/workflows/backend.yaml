@@ -23,12 +23,34 @@ jobs:
           java-version: '17'
           cache: maven
 
+      - name: Configure Maven toolchains for JDK 17
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml <<'XML'
+          <toolchains xmlns="http://maven.apache.org/TOOLCHAINS/1.1.0"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://maven.apache.org/TOOLCHAINS/1.1.0 https://maven.apache.org/xsd/toolchains-1.1.0.xsd">
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>17</version>
+                <vendor>temurin</vendor>
+              </provides>
+              <configuration>
+                <jdkHome>${env.JAVA_HOME}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          XML
+
+      - name: Show effective Java for Maven
+        run: mvn -B -q -Dorg.slf4j.simpleLogger.log.org.apache.maven.plugins.toolchain.DefaultToolchainManager=debug validate
+
       - name: Verify Java & Maven
         run: |
           java -version
           mvn -v
 
-      # Сборка с версией 1.0.<SHA7> без запуска тестов
       - name: Build with Maven (skip tests)
         working-directory: backend
         run: mvn -B package -DskipTests=true -Dversion.application=${APP_VERSION}.${GITHUB_SHA:0:7}
@@ -46,7 +68,6 @@ jobs:
         run: mvn -B spotbugs:check
         continue-on-error: true
 
-      # Загружаем собранный JAR как артефакт
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
         with:
